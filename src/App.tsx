@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import axios from 'axios';
+import { Actividad, Recurso, StudyPlanItem, StudyPlanResponse } from './types/study_plan';
 
 interface Task {
   name: string;
@@ -19,7 +19,7 @@ export default function App() {
   const [newTask, setNewTask] = useState<Task>({ name: '', deadline: '', urgency: 3 });
   const [availability, setAvailability] = useState<Availability>({});
   const [habits, setHabits] = useState('early');
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<StudyPlanResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
   const addTask = () => {
@@ -133,14 +133,14 @@ export default function App() {
       {response && (
         <div className="bg-gray-100 p-4 rounded shadow mb-6">
           <h2 className="text-xl font-semibold mb-4">Plan Generado</h2>
-          {response.study_plan.map((item: any, i: number) => (
+          {response.study_plan.map((item: StudyPlanItem, i: number) => (
             <div key={i} className="mb-6 border-b pb-4">
               <h3 className="text-lg font-bold mb-2">
                 {item.task} <span className="text-sm text-gray-600">({item.mode})</span>
               </h3>
 
               {item.plan.actividades ? (
-                item.plan.actividades.map((actividad: any, idx: number) => (
+                item.plan.actividades.map((actividad: Actividad, idx: number) => (
                   <div key={idx} className="mb-3 bg-white border rounded p-4 shadow-sm">
                     <p className="font-semibold">{actividad.tipo}</p>
                     <p className="text-gray-700">{actividad.descripcion}</p>
@@ -148,11 +148,11 @@ export default function App() {
                       ⏱Tiempo estimado: {actividad.tiempo_estimado}
                     </p>
 
-                    {actividad.recursos?.length > 0 && (
+                    {Array.isArray(actividad.recursos) && actividad.recursos.length > 0 && (
                       <div className="mt-2">
                         <p className="font-semibold text-sm mb-1">Recursos:</p>
                         <ul className="list-disc list-inside text-blue-600 text-sm space-y-1">
-                          {actividad.recursos.map((r: any, j: number) => (
+                          {actividad.recursos.map((r: Recurso, j: number) => (
                             <li key={j}>
                               <a
                                 href={r.link}
